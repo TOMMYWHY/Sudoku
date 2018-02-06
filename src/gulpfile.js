@@ -15,4 +15,9 @@ gulp.task('less',()=>{
     .pipe(gulp.dest('../www/css'));
 });
 
+gulp.task('watch',()=>{
+    gulp.watch('less/**/*.less',['less']);
+    gulp.watch('js/**/*.js',['webpack']);
+})
+
 gulp.task('default',['webpack','less']);

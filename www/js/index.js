@@ -89,29 +89,46 @@ var Grid = function () {
     _createClass(Grid, [{
         key: 'build',
         value: function build() {
+            //宫加粗 样式数组
+            var rowGroupClasses = ['row_g_top', 'row_g_middle', 'row_g_bottom'];
+            var colGroupClasses = ['col_g_left', 'col_g_center', 'col_g_right'];
+
             var matrix = toolkit.makeMatrix();
+            //两层map，操作的小格
             var $cells = matrix.map(function (rowValues) {
-                return rowValues.map(function (cellValue) {
-                    return $('<span>').text(cellValue); //将每个小格定义为span
+                return rowValues.map(function (cellValue, colIndex) {
+                    return $('<span>').addClass(colGroupClasses[colIndex % 3]).text(cellValue); //将每个小格定义为span
                     //     return 'a';
                 });
             });
-            var $divArray = $cells.map(function ($spanArray) {
-                return $('<div>').append($spanArray);
+            //一层map，操作一行
+            var $divArray = $cells.map(function ($spanArray, rowIndex) {
+                return $('<div>').addClass('row').addClass(rowGroupClasses[rowIndex % 3]).append($spanArray);
             });
-            this._$container.append($divArray);
-            /*
-            rowValues.map(cellValue=>{
-              return  $('<span>').text(cellValue);
+
+            this._$container.append($divArray); //将整体放入container
+        }
+
+        /* 格宽高*/
+
+    }, {
+        key: 'layout',
+        value: function layout() {
+            var width = $('span:first', this._$container).width();
+            $('span', this._$container).height(width).css({
+                'line-height': width + 'px',
+                'font-size': width < 32 ? width / 2 + 'px' : ''
             });
-            */
         }
     }]);
 
     return Grid;
 }();
 
-new Grid($('#container')).build();
+var grid = new Grid($('#container'));
+
+grid.build();
+grid.layout();
 
 /***/ }),
 /* 1 */
