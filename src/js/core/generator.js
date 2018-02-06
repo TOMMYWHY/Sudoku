@@ -57,9 +57,6 @@ class Generator {
         }
         return false;//循环结束都没有填写成功
     }
-}
+};
 
-
-const generator =  new Generator();
-generator.generate();
-console.log(generator.matrix);
+module.exports = Generator;
