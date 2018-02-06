@@ -188,6 +188,9 @@ var matrixToolkit = {
         }
         return array;
     }
+
+    /*check 是否可以填*/
+
 };
 
 /*
