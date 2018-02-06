@@ -70,13 +70,25 @@
 "use strict";
 
 
+var Grid = __webpack_require__(1);
+
+var grid = new Grid($('#container'));
+
+grid.build();
+grid.layout();
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var toolkit = __webpack_require__(1);
-var matrix = toolkit.makeMatrix();
-console.log(matrix);
+var Toolkit = __webpack_require__(2);
 
 var Grid = function () {
     //构造函数
@@ -93,7 +105,7 @@ var Grid = function () {
             var rowGroupClasses = ['row_g_top', 'row_g_middle', 'row_g_bottom'];
             var colGroupClasses = ['col_g_left', 'col_g_center', 'col_g_right'];
 
-            var matrix = toolkit.makeMatrix();
+            var matrix = Toolkit.matrix.makeMatrix(); //类的静态方法
             //两层map，操作的小格
             var $cells = matrix.map(function (rowValues) {
                 return rowValues.map(function (cellValue, colIndex) {
@@ -125,55 +137,90 @@ var Grid = function () {
     return Grid;
 }();
 
-var grid = new Grid($('#container'));
-
-grid.build();
-grid.layout();
+module.exports = Grid;
 
 /***/ }),
-/* 1 */
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/*
+矩阵 数组
+ */
 var matrixToolkit = {
-  /* 创建 父级 行 数组*/
-  makeRow: function makeRow() {
-    var v = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+    /* 创建 父级 行 数组*/
+    makeRow: function makeRow() {
+        var v = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
 
-    var array = new Array(9);
-    array.fill(v);
-    return array;
-  },
+        var array = new Array(9);
+        array.fill(v);
+        return array;
+    },
 
-  /*创建 每一行中 matrix数组*/
-  makeMatrix: function makeMatrix() {
-    var _this = this;
+    /*创建 每一行中 matrix数组*/
+    makeMatrix: function makeMatrix() {
+        var _this = this;
 
-    var v = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+        var v = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
 
-    return Array.from({ length: 9 }, function () {
-      return _this.makeRow(v);
-    }); //此处Array.from 是将类数组 转为 数组；map函数，
-    // 使 unknowable 数组的每一个值进行 map操作,其中map函数当第二个参数传入。
-    //此处需要用this 调用模块自身makeRow方法
-  },
+        return Array.from({ length: 9 }, function () {
+            return _this.makeRow(v);
+        }); //此处Array.from 是将类数组 转为 数组；map函数，
+        // 使 unknowable 数组的每一个值进行 map操作,其中map函数当第二个参数传入。
+        //此处需要用this 调用模块自身makeRow方法
+    },
 
-  /* fisher-yates    洗牌算法*/
-  shuffle: function shuffle(array) {
-    var endIndex = array.length - 2; //最后一个element不需要交换，因为它之前的一个已经完成过交换。
-    for (var i = 0; i <= endIndex; i++) {
-      var j = i + Math.floor(Math.random() * (array.length - i)); //floor 向下舍入; j 是被交换的元素
-      //es6 解构
-      var _ref = [array[j], array[i]];
-      array[i] = _ref[0];
-      array[j] = _ref[1];
+    /* fisher-yates    洗牌算法*/
+    shuffle: function shuffle(array) {
+        var endIndex = array.length - 2; //最后一个element不需要交换，因为它之前的一个已经完成过交换。
+        for (var i = 0; i <= endIndex; i++) {
+            var j = i + Math.floor(Math.random() * (array.length - i)); //floor 向下舍入; j 是被交换的元素
+            //es6 解构
+            var _ref = [array[j], array[i]];
+            array[i] = _ref[0];
+            array[j] = _ref[1];
+        }
+        return array;
     }
-    return array;
-  }
 };
-module.exports = matrixToolkit;
+
+/*
+坐标
+ */
+var boxToolkit = {
+    //TODO
+};
+
+module.exports = function () {
+    function Toolkit() {
+        _classCallCheck(this, Toolkit);
+    }
+
+    _createClass(Toolkit, null, [{
+        key: "matrix",
+
+        //数组的静态方法
+        get: function get() {
+            return matrixToolkit;
+        }
+
+        // 坐标 的静态方法
+
+    }, {
+        key: "box",
+        get: function get() {
+            return boxToolkit;
+        }
+    }]);
+
+    return Toolkit;
+}();
 
 /***/ })
 /******/ ]);

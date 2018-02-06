@@ -1,3 +1,6 @@
+/*
+矩阵 数组
+ */
 const  matrixToolkit = {
     /* 创建 父级 行 数组*/
      makeRow(v=0) {
@@ -21,4 +24,22 @@ const  matrixToolkit = {
         return array;
     }
 };
-module.exports = matrixToolkit;
+
+/*
+坐标
+ */
+const boxToolkit= {
+//TODO
+};
+
+module.exports = class Toolkit{
+    //数组的静态方法
+    static get matrix(){
+        return matrixToolkit;
+    }
+
+    // 坐标 的静态方法
+    static  get box(){
+        return boxToolkit;
+    }
+};
