@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+	<title>Sudoku</title>
+	<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+	<!--title-->
+	<div class="title">
+		<h1>Sudoku</h1>
+	</div>
+	<!--boxes-->
+	<div id="container" class="container grid"></div>
+	<!--buttons-->
+	<div id="dashboard" class="dashboard">
+		<div class="buttons">
+			<button type="button" id="check">check</button>
+			<button type="button" id="reset">reset</button>
+			<button type="button" id="clear">clear</button>
+			<button type="button" id="rebuild">rebuild</button>
+		</div>
+	</div>
+	<!--alert board-->
+	<div id="popupNumbers" class="grid popup-num hidden"></div>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
+<script src="js/index.js"></script>
+</html>
