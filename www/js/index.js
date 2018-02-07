@@ -196,12 +196,26 @@ module.exports = function () {
 
 var Grid = __webpack_require__(2);
 var grid = new Grid($('#container'));
-var PopupNumber = __webpack_require__(5);
+var PopupNumber = __webpack_require__(6);
 grid.build();
 grid.layout();
 
 var popupNumbers = new PopupNumber($('#popupNumbers'));
 grid.bindPopup(popupNumbers);
+
+$('#check').on('click', function (e) {
+    grid.check();
+});
+$('#reset').on('click', function (e) {
+    grid.reset();
+});
+$('#clear').on('click', function (e) {
+    grid.clear();
+});
+
+$('#rebuild').on('click', function (e) {
+    grid.rebuild();
+});
 
 /***/ }),
 /* 2 */
@@ -217,6 +231,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var Toolkit = __webpack_require__(0);
 // const Generator = require('../core/generator');
 var Sudoku = __webpack_require__(3);
+var Checker = __webpack_require__(5);
 
 var Grid = function () {
     //构造函数
@@ -273,8 +288,58 @@ var Grid = function () {
         value: function bindPopup(popupNumbers) {
             this._$container.on('click', 'span', function (e) {
                 var $cell = $(e.target);
+                if ($cell.is('.fixed')) {
+                    return;
+                }
                 popupNumbers.popup($cell);
             });
+        }
+        //buttoms
+
+    }, {
+        key: 'check',
+        value: function check() {
+            var data = this._$container.children().map(function (rowIndex, div) {
+                return $(div).children().map(function (colIndex, span) {
+                    return parseInt($(span).text()) || 0;
+                });
+            }).toArray().map(function ($data) {
+                return $data.toArray();
+            });
+            console.log(data);
+            var checker = new Checker(data);
+            if (checker.check()) {
+                return true;
+            }
+            var marks = checker.matrixMarks;
+            this._$container.children().each(function (rowIndex, div) {
+                $(div).children().each(function (colIndex, span) {
+                    var $span = $(span);
+                    if ($span.is('.fixed') || marks[rowIndex][colIndex]) {
+                        $span.removeClass('error');
+                    } else {
+                        $span.addClass('error');
+                    }
+                    // $span.addClass('error');
+                });
+            });
+        }
+    }, {
+        key: 'reset',
+        value: function reset() {
+            this._$container.find('span:not(.fixed)').removeClass('error mark1 mark2').addClass('empty').text(0);
+        }
+    }, {
+        key: 'clear',
+        value: function clear() {
+            this._$container.find('span.error').removeClass('error');
+        }
+    }, {
+        key: 'rebuild',
+        value: function rebuild() {
+            this._$container.empty();
+            this.build();
+            this.layout();
         }
     }]);
 
@@ -424,6 +489,149 @@ module.exports = Generator;
 
 /***/ }),
 /* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+//check result
+function checkArray(array) {
+    var length = array.length;
+    var marks = new Array(length);
+    marks.fill(true);
+    for (var i = 0; i < length - 1; i++) {
+        if (!marks[i]) {
+            continue;
+        }
+        var v = array[i];
+        //是否是0
+        if (!v) {
+            marks[i] = false;
+            continue;
+        }
+        //是否重复
+        for (var j = i + 1; j < length; j++) {
+            if (v === array[j]) {
+                marks[i] = marks[j] = false;
+            }
+        }
+    }
+    return marks;
+}
+
+var Toolkit = __webpack_require__(0);
+//输入 arr
+// check  输出 marks
+
+var Checker = function () {
+    function Checker(matrix) {
+        _classCallCheck(this, Checker);
+
+        this._$matrix = matrix;
+        this._matrixMarks = Toolkit.matrix.makeMatrix(true);
+    }
+
+    _createClass(Checker, [{
+        key: 'check',
+        value: function check() {
+            this.checkRows();
+            this.checkCols();
+            this.checkBoxes();
+            //prototype.every()
+            this._success = this.matrixMarks.every(function (row) {
+                return row.every(function (mark) {
+                    return mark;
+                });
+            });
+            return this._success;
+        }
+    }, {
+        key: 'checkRows',
+        value: function checkRows() {
+            //??
+            for (var rowIndex = 0; rowIndex < 9; rowIndex++) {
+                var row = this._$matrix[rowIndex];
+                var marks = checkArray(row);
+
+                for (var colIndex = 0; colIndex < marks.length; colIndex++) {
+                    if (!marks[colIndex]) {
+                        this._matrixMarks[rowIndex][colIndex] = false;
+                    }
+                }
+            }
+        }
+    }, {
+        key: 'checkCols',
+        value: function checkCols() {
+            for (var colIndex = 0; colIndex < 9; colIndex++) {
+                var cols = [];
+                for (var rowIndex = 0; rowIndex < 9; rowIndex++) {
+                    cols[rowIndex] = this._$matrix[rowIndex][colIndex];
+                }
+                var marks = checkArray(cols);
+                for (var _rowIndex = 0; _rowIndex < marks.length; _rowIndex++) {
+                    if (!marks[_rowIndex]) {
+                        this._matrixMarks[_rowIndex][colIndex] = false;
+                    }
+                }
+            }
+        }
+    }, {
+        key: 'checkBoxes',
+        value: function checkBoxes() {
+            for (var boxIndex = 0; boxIndex < 9; boxIndex++) {
+                var boxes = Toolkit.box.getBoxCells(this._$matrix, boxIndex);
+                var marks = checkArray(boxes);
+                for (var cellIndex = 0; cellIndex < 9; cellIndex++) {
+                    if (!marks[cellIndex]) {
+                        var _Toolkit$box$convertF = Toolkit.box.convertFromBoxIndex(boxIndex, cellIndex),
+                            rowIndex = _Toolkit$box$convertF.rowIndex,
+                            colIndex = _Toolkit$box$convertF.colIndex;
+
+                        this._matrixMarks[rowIndex][colIndex] = false;
+                    }
+                }
+            }
+        }
+    }, {
+        key: 'matrixMarks',
+        get: function get() {
+            return this._matrixMarks;
+        }
+    }, {
+        key: 'isSuccess',
+        get: function get() {
+            return this._success;
+        }
+    }]);
+
+    return Checker;
+}();
+
+module.exports = Checker;
+/*
+
+ */
+// const Generator = require ('./generator');
+// const gen = new Generator();
+// gen.generate();
+// const matrix = gen.matrix;
+// const checker = new Checker(matrix);
+// console.log('check result',checker.check());
+// console.log(checker.matrixMarks);
+// matrix[1][1]=0;
+// matrix[2][3]=matrix[3][5]=5;
+//
+// const checker2 = new Checker(matrix);
+// console.log('check result',checker.check());
+// console.log(checker.matrixMarks);
+
+/***/ }),
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
