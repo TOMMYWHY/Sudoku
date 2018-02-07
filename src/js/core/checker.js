@@ -92,6 +92,8 @@ class Checker{
         }
     }
 }
+/*
+
 
 const Generator = require ('./generator');
 const gen = new Generator();
@@ -100,9 +102,10 @@ const matrix = gen.matrix;
 const checker = new Checker(matrix);
 console.log('check result',checker.check());
 console.log(checker.matrixMarks);
-// matrix[1][1]=0;
-// matrix[2][3]=matrix[3][5]=5;
-//
-// const checker2 = new Checker(matrix);
-// console.log('check result',checker.check());
-// console.log(checker.matrixMarks);
+matrix[1][1]=0;
+matrix[2][3]=matrix[3][5]=5;
+
+const checker2 = new Checker(matrix);
+console.log('check result',checker.check());
+console.log(checker.matrixMarks);
+ */

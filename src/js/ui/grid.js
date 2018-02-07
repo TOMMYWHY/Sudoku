@@ -1,4 +1,6 @@
 const Toolkit=require('../core/toolkit');
+// const Generator = require('../core/generator');
+const Sudoku = require('../core/sudoku');
 
 class Grid{
     //构造函数
@@ -10,12 +12,21 @@ class Grid{
         const rowGroupClasses=['row_g_top','row_g_middle','row_g_bottom'];
         const colGroupClasses=['col_g_left','col_g_center','col_g_right'];
 
-        const matrix = Toolkit.matrix.makeMatrix();//类的静态方法
+        const sudoku = new Sudoku();
+        sudoku.make();
+        const matrix = sudoku.puzzleMatrix;
+        /*
+        const generator = new Generator();
+        generator.generate();
+        // const matrix = Toolkit.matrix.makeMatrix();//类的静态方法
+        const matrix = generator.matrix;
+        */
         //两层map，操作的小格
         const $cells = matrix.map(rowValues=>rowValues
             .map((cellValue,colIndex)=>{
                 return  $('<span>')
                     .addClass(colGroupClasses[colIndex % 3])
+                    .addClass(cellValue ? "fixed" : 'empty')
                     .text(cellValue);//将每个小格定义为span
                 //     return 'a';
             })
@@ -39,6 +50,13 @@ class Grid{
             'line-height':`${width}px`,
             'font-size':width < 32 ? `${width / 2}px`: '',
         });
+    }
+
+    bindPopup(popupNumbers){
+        this._$container.on('click','span', e=>{
+            const $cell = $(e.target);
+            popupNumbers.popup($cell);
+        })
     }
 
 }
